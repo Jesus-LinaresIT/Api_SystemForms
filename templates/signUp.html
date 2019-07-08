@@ -11,9 +11,9 @@
 <h1>Sign Up</h1>
 
 <form method = "post" action="{{ url_for('signup') }}">
-	<p><input type="text" name="username"></p>
-	<p><input type="password" name="password"></p>
-	<input type="submit" value="Sign Up">
+	<p><input name = "username" type = "text"></p>
+	<p><input name = "password" type = "password"></p>
+	<input type = "submit" value = "Sign Up">
 </form>
 
 {% endblock %}

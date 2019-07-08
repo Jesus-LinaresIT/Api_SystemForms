@@ -10,11 +10,10 @@
 
 <h1>{{ title }}</h1>
 
-
+	<form method = "get" action="{{ url_for('search') }}">
+		<p><input type="submit" name="nickname"></p>
+		<input type="submit" value="Search">
+	</form> 
 
 {% endblock %}
 
-<!-- <form method = "get" action="{{ url_for('search') }}">
-	<p><input type="submit" name="nickname"></p>
-	<input type="submit" value="Search">
-</form> -->
