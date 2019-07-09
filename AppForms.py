@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, session, escape
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -16,24 +16,27 @@ class Users(db.Model):
 	username = db.Column(db.String(50), unique = True, nullable = False)
 	password = db.Column(db.String(50), nullable = False)
 
-@app.route("/")
-def index():
-	return render_template("index.html")
+@app.route("/Home")
+def home():
+	if "username" in session:
+		return "Welcome Admin user %s" % escape(session["username"])
 
-@app.route("/cookie/set")
-def set_cookie():
-	resp = make_response(render_template("Index.html"))
-	resp.set_cookie("username", "Jesus Linares")
+	return "You must log in first"
 
-	return resp
+# @app.route("/cookie/set")
+# def set_cookie():
+# 	resp = make_response(render_template("Index.html"))
+# 	resp.set_cookie("username", "Jesus Linares")
 
-@app.route("/cookie/read")
-def read_cookie():
-	username = request.cookies.get("username", None)
+# 	return resp
 
-	if  username == None:
-		return "The cookie doesn't exist"
-	return username	
+# @app.route("/cookie/read")
+# def read_cookie():
+# 	username = request.cookies.get("username", None)
+
+# 	if  username == None:
+# 		return "The cookie doesn't exist"
+# 	return username	
 
 @app.route("/search")
 def search():
@@ -62,14 +65,21 @@ def login():
 		user = Users.query.filter_by(username = request.form["username"]).first()
 
 		if user and check_password_hash(user.password, request.form["password"]):
+			session["username"] = user.username
 			return "You're logeed in"
 
 		return "Your data is invalid, check and try again"
 
 	return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+	session.pop("username", None)
+
+	return "You are logeed out"
+
+app.secret_key = "1234"
+
 if __name__ == "__main__":
 	db.create_all()
 	app.run(debug = True, host ='0.0.0.0', port = 8050)
-
-#Para mañana elaborar el metodo get y las funciones login y search
