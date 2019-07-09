@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,6 +19,21 @@ class Users(db.Model):
 @app.route("/")
 def index():
 	return render_template("index.html")
+
+@app.route("/cookie/set")
+def set_cookie():
+	resp = make_response(render_template("Index.html"))
+	resp.set_cookie("username", "Jesus Linares")
+
+	return resp
+
+@app.route("/cookie/read")
+def read_cookie():
+	username = request.cookies.get("username", None)
+
+	if  username == None:
+		return "The cookie doesn't exist"
+	return username	
 
 @app.route("/search")
 def search():
