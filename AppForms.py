@@ -16,7 +16,20 @@ class Users(db.Model):
 	username = db.Column(db.String(50), unique = True, nullable = False)
 	password = db.Column(db.String(50), nullable = False)
 
-@app.route("/Home")
+@app.route("/") # ruta por defecto para acceder al template
+def index():
+	return render_template("Index.html")
+
+@app.route("/search") #Route para saber si existe un usuario o no
+def search():
+	nickname = request.args.get("nickname")
+	user = Users.query.filter_by(username = nickname).first()
+
+	if user:
+		return "The user found succesfully is: " + user.username 
+	return "the user doesn't exist" 
+
+@app.route("/Home") # Metodo para saber que se ha iniciado la sesion correctamente
 def home():
 	if "username" in session:
 		return "Welcome Admin user %s" % escape(session["username"])
@@ -38,16 +51,7 @@ def home():
 # 		return "The cookie doesn't exist"
 # 	return username	
 
-@app.route("/search")
-def search():
-	nickname = request.args.get("nickname")
-	user = Users.query.filter_by(username = nickname).first()
-
-	if user:
-		return "The user found succesfully is: " + user.username 
-	return "the user doesn't exist" 
-
-@app.route("/signup", methods = ["GET", "POST"])
+@app.route("/signup", methods = ["GET", "POST"]) #Metodo para crear una nueva sesion
 def signup():	
 	if request.method == "POST":
 		password_Encryp = generate_password_hash(request.form["password"], method = "sha256")
@@ -59,7 +63,7 @@ def signup():
 
 	return render_template("signup.html")
 
-@app.route("/login", methods = ["GET", "POST"])
+@app.route("/login", methods = ["GET", "POST"]) #Metodo para iniciar sesion
 def login():	
 	if request.method == "POST":
 		user = Users.query.filter_by(username = request.form["username"]).first()
@@ -72,13 +76,13 @@ def login():
 
 	return render_template("login.html")
 
-@app.route("/logout")
+@app.route("/logout") # Metodo para salir de la sesion
 def logout():
 	session.pop("username", None)
 
 	return "You are logeed out"
 
-app.secret_key = "1234"
+app.secret_key = "1234" # Clave secreta para las cookies de mi sesion iniciada
 
 if __name__ == "__main__":
 	db.create_all()
